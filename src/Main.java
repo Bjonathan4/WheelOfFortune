@@ -26,6 +26,7 @@ public class Main {
                 return 900;
             case 23:
                 return 2500;
+
         }
         return spin;
     }
@@ -47,25 +48,26 @@ public class Main {
     public static void main(String[] args) {
         //activates functions for category and phrase
         System.out.println("Welcome to wheel of fortune!");
-        int spinVal = wheelSpin();
-        if (spinVal < 0) {
-            System.out.println("Lose a turn");
-        } else {
-            System.out.println(spinVal);
-        }
         int guesses = 2;
         boolean flag = true;
         while (flag) {
-            int winState = solver("oh yeah", "oh ____", guesses);
-            if (winState == 1) {
-                System.out.println("You Win!");
-                flag = false;
-            } else if (winState == 2) {
-                System.out.println("Incorrect, Try Again!");
-                guesses = guesses - 1;
-            } else if (winState == 3) {
-                System.out.println("You Lose!");
-                flag = false;
+            int spinVal = wheelSpin();
+            if (spinVal == -1) {
+                System.out.println("Lose a turn");
+                System.out.println();
+            } else {
+                System.out.println(spinVal);
+                int winState = solver("oh yeah", "oh ____", guesses);
+                if (winState == 1) {
+                    System.out.println("You Win!");
+                    flag = false;
+                } else if (winState == 2) {
+                    System.out.println("Incorrect, Try Again!");
+                    guesses = guesses - 1;
+                } else if (winState == 3) {
+                    System.out.println("You Lose!");
+                    flag = false;
+                }
             }
         }
     }
