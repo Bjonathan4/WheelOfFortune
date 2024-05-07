@@ -1,17 +1,38 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     static Scanner scan = new Scanner(System.in);
 
-    public static void updateBoard(int spinVal, int userScore, char letter,
-                                   String partialPhrase, String fullPhrase) {
+    static List<Character> vowelList() {
+        List<Character> vowels = new ArrayList<>();
+        vowels.add('a');
+        vowels.add('e');
+        vowels.add('i');
+        vowels.add('o');
+        vowels.add('u');
+        return vowels;
+    }
+
+    public static String updateBoard(int spinVal, int userScore, char letter,
+                                     String partialPhrase, String fullPhrase) {
+        List<Character> vowels = vowelList();
         int charCount = 0;
+        String newPartialPhrase = partialPhrase;
+
         //String[] fullPhraseArray = {};
         for (int i = 0; i < fullPhrase.length(); i++) {
-            if (fullPhrase.indexOf(letter) == letter) {
-
+            if (fullPhrase.charAt(i) == letter) {
+                newPartialPhrase.replace('-', letter);
+                charCount += 1;
             }
         }
+        partialPhrase = newPartialPhrase;
+        if (!vowels.contains(letter)) {
+            userScore += (spinVal * charCount);
+        }
+    return String.format("There are %d %s's\nCurrent Score: %d", charCount, letter, userScore);
     }
 
     public static int solver(String fullPhrase, String partialPhrase, int guesses){
