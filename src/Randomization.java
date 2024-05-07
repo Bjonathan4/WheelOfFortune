@@ -9,9 +9,13 @@ public class Randomization {
         wheelVal = 0;
     }
 
+    /**
+     * Creates and stores the dollar values for the wheel,
+     * chooses a random number every spin
+     * @return a random dollar value
+     */
     public static int wheelVal() {
         Random random = new Random();
-        // Create list to store wheel values (in dollars)
         ArrayList<Integer> wheelNums = new ArrayList<>();
         wheelNums.add(-1);
         wheelNums.add(-1);
@@ -37,7 +41,6 @@ public class Randomization {
         wheelNums.add(900);
         wheelNums.add(900);
         wheelNums.add(2500);
-        // Chooses a random number from the list
         wheelVal = wheelNums.get(random.nextInt(wheelNums.size()));
         return wheelVal;
     }
