@@ -1,3 +1,3 @@
-WheelOfFortune: A program that simulates a game of Wheel of Fortune.
+WheelOFFortune: A program that simulates a game of Wheel of Fortune.
 
-Made by Lennon Lavarier, Logan Parker, Bravo Burora.
+Made By Lennon Lavarier, Logan Parker, and Bravo Burora
