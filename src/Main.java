@@ -1,10 +1,10 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
+
 
 public class Main {
     static Scanner scan = new Scanner(System.in);
-
     static List<Character> vowelList() {
         List<Character> vowels = new ArrayList<>();
         vowels.add('a');
@@ -15,24 +15,29 @@ public class Main {
         return vowels;
     }
 
-    public static String updateBoard(int spinVal, int userScore, char letter,
-                                     String partialPhrase, String fullPhrase) {
-        List<Character> vowels = vowelList();
-        int charCount = 0;
-        String newPartialPhrase = partialPhrase;
 
-        //String[] fullPhraseArray = {};
-        for (int i = 0; i < fullPhrase.length(); i++) {
-            if (fullPhrase.charAt(i) == letter) {
-                newPartialPhrase.replace('-', letter);
-                charCount += 1;
+    public static char guessLetter(){
+        while (true) {
+            System.out.println("Would you like to guess a consonant or vowel? (enter c or v): ");
+            String choice = scan.nextLine();
+            if (choice.toLowerCase().startsWith("c")){
+                System.out.println("Please enter a consonant");
+                char letter = scan.next().charAt(0);
+                if (letter != 'a' && letter != 'e' && letter != 'i' && letter != 'o' && letter != 'u'){
+                    return letter;
+                } else {
+                    System.out.println("Error, incorrect letter type,  try again!");
+                }
+            } else if (choice.toLowerCase().startsWith("v")){
+                System.out.println("Please enter a vowel");
+                char letter = scan.next().charAt(0);
+                if (letter == 'a' || letter == 'e' || letter == 'i' || letter == 'o' || letter == 'u'){
+                    return letter;
+                } else{
+                    System.out.println("Error, incorrect letter type, try again!");
+                }
             }
         }
-        partialPhrase = newPartialPhrase;
-        if (!vowels.contains(letter)) {
-            userScore += (spinVal * charCount);
-        }
-    return String.format("There are %d %s's\nCurrent Score: %d", charCount, letter, userScore);
     }
 
     public static int solver(String fullPhrase, String partialPhrase, int guesses){
@@ -57,6 +62,7 @@ public class Main {
         int guesses = 2;
         boolean flag = true;
         while (flag) {
+            char letter = guessLetter();
             int spinVal = Randomization.wheelVal();
             if (spinVal == -1) {
                 System.out.println("Bankrupt!");
