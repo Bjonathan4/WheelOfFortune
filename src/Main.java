@@ -15,11 +15,20 @@ public class Main {
         return vowels;
     }
 
-
-    public static char guessLetter(){
+    public static String letterChoice() {
         while (true) {
             System.out.println("Would you like to guess a consonant or vowel? (enter c or v): ");
             String choice = scan.nextLine();
+            if (choice.toLowerCase().startsWith("c") || choice.toLowerCase().startsWith("v")) {
+                return choice;
+            } else {
+                System.out.println("error, c or v not seen. Please try again");
+            }
+        }
+    }
+
+    public static char guessLetter(String choice){
+        while (true) {
             if (choice.toLowerCase().startsWith("c")){
                 System.out.println("Please enter a consonant");
                 char letter = scan.next().charAt(0);
@@ -42,6 +51,7 @@ public class Main {
 
     public static int solver(String fullPhrase, String partialPhrase, int guesses){
         System.out.println(partialPhrase);
+        scan.nextLine();
         System.out.println("Please enter your guess for full phrase:");
         String choice = scan.nextLine();
         if (choice.equalsIgnoreCase(fullPhrase)) {
@@ -51,8 +61,6 @@ public class Main {
         } else {
             return 3;
         }
-
-
     }
 
     public static void main(String[] args) {
@@ -62,16 +70,32 @@ public class Main {
         int guesses = 2;
         boolean flag = true;
         while (flag) {
-            char letter = guessLetter();
-            int spinVal = Randomization.wheelVal();
-            if (spinVal == -1) {
-                System.out.println("Bankrupt!");
-                userScore = 0;
-                System.out.println("Current score: $0");
-                scan.nextLine();
-                System.out.println("\n\n\n\n\n\n\n");
+            String choice = letterChoice();
+            if (choice.equalsIgnoreCase("c")){
+                int spinVal = Randomization.wheelVal();
+                if (spinVal == -1) {
+                    System.out.println("Bankrupt!");
+                    userScore = 0;
+                    System.out.println("Current score: $0");
+                    scan.nextLine();
+                    System.out.println("\n\n\n\n\n\n\n");
+                } else {
+                    System.out.println("$" + spinVal);
+                    char letter = guessLetter(choice);
+                    int winState = solver("oh yeah", "oh ____", guesses);
+                    if (winState == 1) {
+                        System.out.println("You Win!");
+                        flag = false;
+                    } else if (winState == 2) {
+                        System.out.println("Incorrect, Try Again!");
+                        guesses = guesses - 1;
+                    } else if (winState == 3) {
+                        System.out.println("You Lose!");
+                        flag = false;
+                    }
+                }
             } else {
-                System.out.println("$" + spinVal);
+                char letter = guessLetter(choice);
                 int winState = solver("oh yeah", "oh ____", guesses);
                 if (winState == 1) {
                     System.out.println("You Win!");
