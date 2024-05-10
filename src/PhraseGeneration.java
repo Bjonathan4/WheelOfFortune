@@ -7,12 +7,12 @@ public class PhraseGeneration {
     private static final Map<String, List<String>> categoriesAndPhrases = new HashMap<>();
     // Fill out the map with specified groups and the related phrases.
     static {
-        categoriesAndPhrases.put("Movie", Arrays.asList("The Godfather", "The Shawshank Redemption", "Hotel Rwanda","The family plan"));
-        categoriesAndPhrases.put("Song", Arrays.asList("like that", "Hot line bling", "Hello","Not like us "));
+        categoriesAndPhrases.put("Movie", Arrays.asList("The Godfather", "The Shawshank Redemption", "Hotel Rwanda","The Family Plan"));
+        categoriesAndPhrases.put("Song", Arrays.asList("Like That", "Hot Line Bling", "Hello","Not Like Us "));
         categoriesAndPhrases.put("Country", Arrays.asList("United States", "Canada", "Rwanda","Kenya"));
     }
     //Method for creating a random category and phrase pair
-    public String[] generateCategoryAndPhrase() {
+    public String generateCategoryAndPhrase() {
         Random random = new Random();
         // Get all categories from the map
         List<String> categories = new ArrayList<>(categoriesAndPhrases.keySet());
@@ -22,8 +22,9 @@ public class PhraseGeneration {
         List<String> phrases = categoriesAndPhrases.get(randomCategory);
         //Select a random phrase from the list of phrases associated with the selected category
         String randomPhrase = phrases.get(random.nextInt(phrases.size()));
+        System.out.println("Category: " + randomCategory);
         //Return the random category and phrase as an array
-        return new String[]{randomCategory, randomPhrase};
+        return randomPhrase;
     }
 
     public String generateBlankPhrase(String phrase) {
