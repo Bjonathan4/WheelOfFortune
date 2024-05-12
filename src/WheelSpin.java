@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 import java.util.Random;
-public class Randomization {
+public class WheelSpin {
     // Dollar value of the wheel spin
     public static int wheelVal;
 
     // Default Constructor
-    public Randomization() {
+    public WheelSpin() {
         wheelVal = 0;
     }
 

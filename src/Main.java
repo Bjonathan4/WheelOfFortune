@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Main {
     static Scanner scan = new Scanner(System.in);
+    static PhraseGeneration phraseGeneration = new PhraseGeneration();
     static List<Character> vowelList() {
         List<Character> vowels = new ArrayList<>();
         vowels.add('a');
@@ -35,7 +36,7 @@ public class Main {
                 if (letter != 'a' && letter != 'e' && letter != 'i' && letter != 'o' && letter != 'u'){
                     return letter;
                 } else {
-                    System.out.println("Error, incorrect letter type,  try again!");
+                    System.out.println("Error, incorrect letter type, try again!");
                 }
             } else if (choice.toLowerCase().startsWith("v")){
                 System.out.println("Please enter a vowel");
@@ -65,15 +66,18 @@ public class Main {
 
     public static void main(String[] args) {
         //activates functions for category and phrase
-        System.out.println("Welcome to wheel of fortune!");
+        System.out.println("Welcome to Wheel of Fortune!");
+        String fullPhrase = phraseGeneration.generateCategoryAndPhrase();
+        String partialPhrase = phraseGeneration.generateBlankPhrase(fullPhrase);
         int userScore = 0;
         int guesses = 2;
         boolean flag = true;
         while (flag) {
             String choice = letterChoice();
             if (choice.equalsIgnoreCase("c")){
-                int spinVal = Randomization.wheelVal();
+                int spinVal = WheelSpin.wheelVal();
                 if (spinVal == -1) {
+                    // Bankrupt spin: resets userScore to 0
                     System.out.println("Bankrupt!");
                     userScore = 0;
                     System.out.println("Current score: $0");
@@ -82,7 +86,9 @@ public class Main {
                 } else {
                     System.out.println("$" + spinVal);
                     char letter = guessLetter(choice);
-                    int winState = solver("oh yeah", "oh ____", guesses);
+                    partialPhrase = BoardUpdate.boardUpdate(letter, partialPhrase,fullPhrase);
+                    userScore = BoardUpdate.scoreUpdate(spinVal, userScore, letter, fullPhrase);
+                    int winState = solver(fullPhrase, partialPhrase, guesses);
                     if (winState == 1) {
                         System.out.println("You Win!");
                         flag = false;
@@ -96,7 +102,9 @@ public class Main {
                 }
             } else {
                 char letter = guessLetter(choice);
-                int winState = solver("oh yeah", "oh ____", guesses);
+                partialPhrase = BoardUpdate.boardUpdate(letter, partialPhrase,fullPhrase);
+                userScore = BoardUpdate.scoreUpdate(0, userScore, letter, fullPhrase);
+                int winState = solver(fullPhrase, partialPhrase, guesses);
                 if (winState == 1) {
                     System.out.println("You Win!");
                     flag = false;
