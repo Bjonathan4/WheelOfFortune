@@ -16,12 +16,18 @@ public class Main {
         return vowels;
     }
 
-    public static String letterChoice() {
+    public static String letterChoice(int userScore) {
         while (true) {
             System.out.println("Would you like to guess a consonant or vowel? (enter c or v): ");
             String choice = scan.nextLine();
-            if (choice.toLowerCase().startsWith("c") || choice.toLowerCase().startsWith("v")) {
+            if (choice.toLowerCase().startsWith("c")) {
                 return choice;
+            } else if (choice.toLowerCase().startsWith("v")) {
+                if (userScore < 250){
+                    System.out.println("Error: not enough money to buy a vowel");
+                } else {
+                    return choice;
+                }
             } else {
                 System.out.println("error, c or v not seen. Please try again");
             }
@@ -29,11 +35,12 @@ public class Main {
     }
 
     public static char guessLetter(String choice){
+        List<Character> vowels = vowelList();
         while (true) {
             if (choice.toLowerCase().startsWith("c")){
                 System.out.println("Please enter a consonant");
                 char letter = scan.next().charAt(0);
-                if (letter != 'a' && letter != 'e' && letter != 'i' && letter != 'o' && letter != 'u'){
+                if (!vowels.contains(letter)){
                     return letter;
                 } else {
                     System.out.println("Error, incorrect letter type, try again!");
@@ -41,7 +48,7 @@ public class Main {
             } else if (choice.toLowerCase().startsWith("v")){
                 System.out.println("Please enter a vowel");
                 char letter = scan.next().charAt(0);
-                if (letter == 'a' || letter == 'e' || letter == 'i' || letter == 'o' || letter == 'u'){
+                if (vowels.contains(letter)){
                     return letter;
                 } else{
                     System.out.println("Error, incorrect letter type, try again!");
@@ -50,17 +57,23 @@ public class Main {
         }
     }
 
-    public static int solver(String fullPhrase, String partialPhrase, int guesses){
+    public static int solver(String fullPhrase, String partialPhrase, int guesses) {
         System.out.println(partialPhrase);
         scan.nextLine();
-        System.out.println("Please enter your guess for full phrase:");
-        String choice = scan.nextLine();
-        if (choice.equalsIgnoreCase(fullPhrase)) {
-            return 1;
-        } else if (guesses > 0) {
-            return 2;
+        System.out.println("Would you like to Solve? (y or n)");
+        String solving = scan.nextLine();
+        if (solving.toLowerCase().startsWith("y")) {
+            System.out.println("Please enter your guess for full phrase:");
+            String choice = scan.nextLine();
+            if (choice.equalsIgnoreCase(fullPhrase)) {
+                return 1;
+            } else if (guesses > 0) {
+                return 2;
+            } else {
+                return 3;
+            }
         } else {
-            return 3;
+            return 4;
         }
     }
 
@@ -69,11 +82,12 @@ public class Main {
         System.out.println("Welcome to Wheel of Fortune!");
         String fullPhrase = phraseGeneration.generateCategoryAndPhrase();
         String partialPhrase = phraseGeneration.generateBlankPhrase(fullPhrase);
+        System.out.println(partialPhrase);
         int userScore = 0;
         int guesses = 2;
         boolean flag = true;
         while (flag) {
-            String choice = letterChoice();
+            String choice = letterChoice(userScore);
             if (choice.equalsIgnoreCase("c")){
                 int spinVal = WheelSpin.wheelVal();
                 if (spinVal == -1) {
@@ -98,6 +112,8 @@ public class Main {
                     } else if (winState == 3) {
                         System.out.println("You Lose!");
                         flag = false;
+                    } else if (winState == 4){
+                        System.out.println("Next Round!");
                     }
                 }
             } else {
@@ -114,6 +130,8 @@ public class Main {
                 } else if (winState == 3) {
                     System.out.println("You Lose!");
                     flag = false;
+                } else if (winState == 4) {
+                    System.out.println("Next Round!");
                 }
             }
         }
