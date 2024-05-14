@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
@@ -6,6 +9,11 @@ import java.util.ArrayList;
 public class Main {
     static Scanner scan = new Scanner(System.in);
     static PhraseGeneration phraseGeneration = new PhraseGeneration();
+
+    /**
+     * Generates a list of all vowels
+     * @return List of char's of all vowels
+     */
     static List<Character> vowelList() {
         List<Character> vowels = new ArrayList<>();
         vowels.add('a');
@@ -16,6 +24,11 @@ public class Main {
         return vowels;
     }
 
+    /**
+     * asks user if they want to guess a consonant or buy a vowel
+     * @param userScore int of player's current score
+     * @return string of choice, either a c or a v
+     */
     public static String letterChoice(int userScore) {
         while (true) {
             System.out.println("Would you like to guess a consonant or vowel? (enter c or v): ");
@@ -34,6 +47,11 @@ public class Main {
         }
     }
 
+    /**
+     * allows the user to guess a letter
+     * @param choice string of choice from letter choice, either c or v
+     * @return char of their guessed letter
+     */
     public static char guessLetter(String choice){
         List<Character> vowels = vowelList();
         while (true) {
@@ -57,6 +75,13 @@ public class Main {
         }
     }
 
+    /**
+     * Allows a user to attempt to solve the puzzle based off what has been revealed so far
+     * @param fullPhrase String of the Full Phrase
+     * @param partialPhrase String of the partial phrase
+     * @param guesses an int of remaining guesses
+     * @return int of the win state (1, 2, 3, or 4)
+     */
     public static int solver(String fullPhrase, String partialPhrase, int guesses) {
         System.out.println(partialPhrase);
         scan.nextLine();
@@ -77,6 +102,20 @@ public class Main {
         }
     }
 
+    /**
+     * Writes the user's score to a file
+     * @param scoreFile String of the file path
+     * @param userScore int of the user's score
+     */
+    public static void scoreWriter(String scoreFile, int userScore){
+        String score = "Your Score was: $" + userScore;
+        try {
+            Files.write(Paths.get(scoreFile), score.getBytes());
+        } catch (IOException ex) {
+            System.out.println("File cannot be opened for writing!");
+        }
+    }
+
     public static void main(String[] args) {
         //activates functions for category and phrase
         System.out.println("Welcome to Wheel of Fortune!");
@@ -85,10 +124,12 @@ public class Main {
         System.out.println(partialPhrase);
         int userScore = 0;
         int guesses = 2;
+        String scoreFile = "data/score.txt";
         boolean flag = true;
         while (flag) {
             String choice = letterChoice(userScore);
             if (choice.equalsIgnoreCase("c")){
+                //consonant version of the loop
                 int spinVal = WheelSpin.wheelVal();
                 if (spinVal == -1) {
                     // Bankrupt spin: resets userScore to 0
@@ -103,8 +144,10 @@ public class Main {
                     partialPhrase = BoardUpdate.boardUpdate(letter, partialPhrase,fullPhrase);
                     userScore = BoardUpdate.scoreUpdate(spinVal, userScore, letter, fullPhrase);
                     int winState = solver(fullPhrase, partialPhrase, guesses);
+                    // if statement continues game based off result of solver
                     if (winState == 1) {
                         System.out.println("You Win!");
+                        scoreWriter(scoreFile, userScore);
                         flag = false;
                     } else if (winState == 2) {
                         System.out.println("Incorrect, Try Again!");
@@ -117,12 +160,15 @@ public class Main {
                     }
                 }
             } else {
+                // Vowel version of the loop
                 char letter = guessLetter(choice);
                 partialPhrase = BoardUpdate.boardUpdate(letter, partialPhrase,fullPhrase);
                 userScore = BoardUpdate.scoreUpdate(0, userScore, letter, fullPhrase);
                 int winState = solver(fullPhrase, partialPhrase, guesses);
+                // if statement continues game based off result of solver
                 if (winState == 1) {
                     System.out.println("You Win!");
+                    scoreWriter(scoreFile, userScore);
                     flag = false;
                 } else if (winState == 2) {
                     System.out.println("Incorrect, Try Again!");
