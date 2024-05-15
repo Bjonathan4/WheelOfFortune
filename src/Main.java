@@ -117,69 +117,90 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        //activates functions for category and phrase
-        System.out.println("Welcome to Wheel of Fortune!");
-        String fullPhrase = phraseGeneration.generateCategoryAndPhrase();
-        String partialPhrase = phraseGeneration.generateBlankPhrase(fullPhrase);
-        System.out.println(partialPhrase);
-        int userScore = 0;
-        int guesses = 2;
-        String scoreFile = "data/score.txt";
-        boolean flag = true;
-        while (flag) {
-            String choice = letterChoice(userScore);
-            if (choice.equalsIgnoreCase("c")){
-                //consonant version of the loop
-                int spinVal = WheelSpin.wheelVal();
-                if (spinVal == -1) {
-                    // Bankrupt spin: resets userScore to 0
-                    System.out.println("Bankrupt!");
-                    userScore = 0;
-                    System.out.println("Current score: $0");
-                    scan.nextLine();
-                    System.out.println("\n\n\n\n\n\n\n");
+        // sessionFlag remains true while the player wants to play
+        // When they're done, the flag is false and the program closes
+        boolean sessionFlag = true;
+        while (sessionFlag) {
+            //activates functions for category and phrase
+            System.out.println("Welcome to Wheel of Fortune!");
+            String fullPhrase = phraseGeneration.generateCategoryAndPhrase();
+            String partialPhrase = phraseGeneration.generateBlankPhrase(fullPhrase);
+            System.out.println(partialPhrase);
+            int userScore = 0;
+            int guesses = 2;
+            String scoreFile = "data/score.txt";
+            // singleGameFlag remains true until the end of the current game
+            boolean singleGameFlag = true;
+            while (singleGameFlag) {
+                String choice = letterChoice(userScore);
+                if (choice.equalsIgnoreCase("c")) {
+                    //consonant version of the loop
+                    int spinVal = WheelSpin.wheelVal();
+                    if (spinVal == -1) {
+                        // Bankrupt spin: resets userScore to 0
+                        userScore = 0;
+                        System.out.println("Bankrupt!\nCurrent score: $0");
+                        System.out.println("(Press Enter to continue)");
+                        scan.nextLine();
+                        System.out.println("\n\n\n\n\n\n\n");
+                    } else {
+                        System.out.println("$" + spinVal);
+                        char letter = guessLetter(choice);
+                        partialPhrase = BoardUpdate.boardUpdate(letter,
+                                partialPhrase, fullPhrase);
+                        userScore = BoardUpdate.scoreUpdate(spinVal, userScore,
+                                letter, fullPhrase);
+                        int winState = solver(fullPhrase, partialPhrase, guesses);
+                        // if statement continues game based off result of solver
+                        if (winState == 1) {
+                            System.out.println("You Win!\n");
+                            System.out.println("The answer was: " + fullPhrase);
+                            scoreWriter(scoreFile, userScore);
+                            singleGameFlag = false;
+                        } else if (winState == 2) {
+                            System.out.println("Incorrect, Try Again!");
+                            guesses = guesses - 1;
+                        } else if (winState == 3) {
+                            System.out.println("You Lose!\n");
+                            System.out.println("The answer was: " + fullPhrase);
+                            singleGameFlag = false;
+                        } else if (winState == 4) {
+                            System.out.println("Next Round!");
+                        }
+                    }
                 } else {
-                    System.out.println("$" + spinVal);
+                    // Vowel version of the loop
                     char letter = guessLetter(choice);
-                    partialPhrase = BoardUpdate.boardUpdate(letter, partialPhrase,fullPhrase);
-                    userScore = BoardUpdate.scoreUpdate(spinVal, userScore, letter, fullPhrase);
+                    partialPhrase = BoardUpdate.boardUpdate(letter,
+                            partialPhrase, fullPhrase);
+                    userScore = BoardUpdate.scoreUpdate(0, userScore,
+                            letter, fullPhrase);
                     int winState = solver(fullPhrase, partialPhrase, guesses);
                     // if statement continues game based off result of solver
                     if (winState == 1) {
-                        System.out.println("You Win!");
+                        System.out.println("You Win!\n");
+                        System.out.println("The answer was: " + fullPhrase);
                         scoreWriter(scoreFile, userScore);
-                        flag = false;
+                        singleGameFlag = false;
                     } else if (winState == 2) {
                         System.out.println("Incorrect, Try Again!");
                         guesses = guesses - 1;
                     } else if (winState == 3) {
-                        System.out.println("You Lose!");
-                        flag = false;
-                    } else if (winState == 4){
+                        System.out.println("You Lose!\n");
+                        System.out.println("The answer was: " + fullPhrase);
+                        singleGameFlag = false;
+                    } else if (winState == 4) {
                         System.out.println("Next Round!");
                     }
                 }
-            } else {
-                // Vowel version of the loop
-                char letter = guessLetter(choice);
-                partialPhrase = BoardUpdate.boardUpdate(letter, partialPhrase,fullPhrase);
-                userScore = BoardUpdate.scoreUpdate(0, userScore, letter, fullPhrase);
-                int winState = solver(fullPhrase, partialPhrase, guesses);
-                // if statement continues game based off result of solver
-                if (winState == 1) {
-                    System.out.println("You Win!");
-                    scoreWriter(scoreFile, userScore);
-                    flag = false;
-                } else if (winState == 2) {
-                    System.out.println("Incorrect, Try Again!");
-                    guesses = guesses - 1;
-                } else if (winState == 3) {
-                    System.out.println("You Lose!");
-                    flag = false;
-                } else if (winState == 4) {
-                    System.out.println("Next Round!");
-                }
             }
+        // asks player if they want to keep playing
+        System.out.println("Would you like to play again? (y or n)");
+        if (!scan.nextLine().startsWith("y")) {
+            System.out.println("Thanks for playing!");
+            sessionFlag = false;
+        }
+        System.out.println("\n\n\n\n\n\n\n\n");
         }
     }
 }
