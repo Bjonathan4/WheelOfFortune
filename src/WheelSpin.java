@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 public class WheelSpin {
     // Dollar value of the wheel spin
@@ -16,7 +17,7 @@ public class WheelSpin {
      */
     public static int wheelVal() {
         Random random = new Random();
-        ArrayList<Integer> wheelNums = new ArrayList<>();
+        List<Integer> wheelNums = new ArrayList<>();
         wheelNums.add(-1);
         wheelNums.add(-1);
         wheelNums.add(-1);
