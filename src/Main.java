@@ -52,14 +52,18 @@ public class Main {
      * @param choice string of choice from letter choice, either c or v
      * @return char of their guessed letter
      */
-    public static char guessLetter(String choice){
+    public static char guessLetter(String choice, List<Character> guessedLetters){
         List<Character> vowels = vowelList();
         while (true) {
             if (choice.toLowerCase().startsWith("c")){
                 System.out.println("Please enter a consonant");
                 char letter = scan.next().charAt(0);
                 if (!vowels.contains(letter)){
-                    return letter;
+                    if(!guessedLetters.contains(letter)) {
+                        return letter;
+                    } else {
+                        System.out.println("Error: You've already guessed this letter!");
+                    }
                 } else {
                     System.out.println("Error, incorrect letter type, try again!");
                 }
@@ -67,7 +71,11 @@ public class Main {
                 System.out.println("Please enter a vowel");
                 char letter = scan.next().charAt(0);
                 if (vowels.contains(letter)){
-                    return letter;
+                    if(!guessedLetters.contains(letter)) {
+                        return letter;
+                    } else {
+                        System.out.println("Error: You've already guessed this letter!");
+                    }
                 } else{
                     System.out.println("Error, incorrect letter type, try again!");
                 }
@@ -107,15 +115,26 @@ public class Main {
      * @param scoreFile String of the file path
      * @param userScore int of the user's score
      */
-    public static void scoreWriter(String scoreFile, int userScore){
-        String score = "Your Score was: $" + userScore;
-        try {
-            Files.write(Paths.get(scoreFile), score.getBytes());
-        } catch (IOException ex) {
-            System.out.println("File cannot be opened for writing!");
+    public static void scoreWriter(String scoreFile, int userScore, int highScore){
+        String score = Integer.toString(userScore);
+        if (userScore > highScore) {
+            System.out.println("Congratulations, You got a new high score! check score.txt to see your best score");
+            try {
+                Files.write(Paths.get(scoreFile), score.getBytes());
+            } catch (IOException ex) {
+                System.out.println("File cannot be opened for writing!");
+            }
         }
     }
 
+    public static int scoreReader(String scoreFile){
+        try {
+            return Integer.parseInt(Files.readString(Paths.get(scoreFile)));
+        } catch (IOException ex) {
+            System.out.println("File cannot be opened for reading! High Scores not available.");
+            return 0;
+        }
+    }
     public static void main(String[] args) {
         // sessionFlag remains true while the player wants to play
         // When they're done, the flag is false and the program closes
@@ -129,6 +148,8 @@ public class Main {
             int userScore = 0;
             int guesses = 2;
             String scoreFile = "data/score.txt";
+            int highScore = scoreReader(scoreFile);
+            List<Character> guessedLetters = new ArrayList<>();
             // singleGameFlag remains true until the end of the current game
             boolean singleGameFlag = true;
             while (singleGameFlag) {
@@ -145,7 +166,8 @@ public class Main {
                         System.out.println("\n\n\n\n\n\n\n");
                     } else {
                         System.out.println("$" + spinVal);
-                        char letter = guessLetter(choice);
+                        char letter = guessLetter(choice, guessedLetters);
+                        guessedLetters.add(letter);
                         partialPhrase = BoardUpdate.boardUpdate(letter,
                                 partialPhrase, fullPhrase);
                         userScore = BoardUpdate.scoreUpdate(spinVal, userScore,
@@ -155,7 +177,7 @@ public class Main {
                         if (winState == 1) {
                             System.out.println("You Win!\n");
                             System.out.println("The answer was: " + fullPhrase);
-                            scoreWriter(scoreFile, userScore);
+                            scoreWriter(scoreFile, userScore, highScore);
                             singleGameFlag = false;
                         } else if (winState == 2) {
                             System.out.println("Incorrect, Try Again!");
@@ -170,7 +192,8 @@ public class Main {
                     }
                 } else {
                     // Vowel version of the loop
-                    char letter = guessLetter(choice);
+                    char letter = guessLetter(choice, guessedLetters);
+                    guessedLetters.add(letter);
                     partialPhrase = BoardUpdate.boardUpdate(letter,
                             partialPhrase, fullPhrase);
                     userScore = BoardUpdate.scoreUpdate(0, userScore,
@@ -180,7 +203,7 @@ public class Main {
                     if (winState == 1) {
                         System.out.println("You Win!\n");
                         System.out.println("The answer was: " + fullPhrase);
-                        scoreWriter(scoreFile, userScore);
+                        scoreWriter(scoreFile, userScore, highScore);
                         singleGameFlag = false;
                     } else if (winState == 2) {
                         System.out.println("Incorrect, Try Again!");
